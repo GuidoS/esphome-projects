@@ -1,0 +1,52 @@
+esphome:
+    name: hgh-esp32c6-01
+    friendly_name: hghc601
+
+esp32:
+    board: esp32-c6-devkitc-1
+    framework:
+        type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+    encryption:
+        key: "6h33jGH2CC1OXocACIxObBCsw/q7miDu3fgWOjdb5S0="
+
+ota:
+    - platform: esphome
+      password: "5a3a59f8aab109d65db42de3bf2cc6df"
+
+wifi:
+    ssid: !secret wifi_ssid
+    password: !secret wifi_password
+
+switch:
+    - platform: gpio
+      name: "00_switch"
+      pin:
+          number: GPIO00
+          inverted: False
+    - platform: gpio
+      name: "01_switch"
+      pin:
+          number: GPIO01
+          inverted: False
+
+binary_sensor:
+    - platform: gpio
+      name: "02_liquid_level"
+      pin:
+          number: GPIO02
+          mode:
+              input: true
+              pullup: true
+    - platform: gpio
+      name: "03_liquid_level"
+      pin:
+          number: GPIO21
+          mode:
+              input: true
+              pullup: true
