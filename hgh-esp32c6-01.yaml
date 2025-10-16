@@ -1,6 +1,8 @@
 esphome:
-    name: hgh-esp32c6-01
-    friendly_name: hghc601
+    name: hydro-v1-xiao-esp32c6
+    friendly_name: h1-xc6
+    comment: Hydroponic Manager v1 on XIAO ESP32C6
+    area: Hydro Greenhouse
 
 esp32:
     board: esp32-c6-devkitc-1
