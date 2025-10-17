@@ -1,9 +1,9 @@
 esphome:
-    name: freezer-temperature-1
+    name: esp8266-freezer-temperature-1
     friendly_name: ft1
 
 esp8266:
-    board: d1_mini
+    board: d1_mini_lite
 
 # Enable logging
 logger:
@@ -27,27 +27,42 @@ wifi:
         password: "HSozygruqANq"
 
 captive_portal:
-one_wire:
+
+# Example configuration entry
+sensor:
+    - platform: ntc
+      sensor: resistance_sensor
+      unit_of_measurement: "°F"
+      icon: "mdi:water-percent"
+      device_class: "temperature"
+      state_class: "measurement"
+      calibration:
+          b_constant: 3950
+          reference_temperature: 25°C
+          reference_resistance: 10kOhm
+      name: NTC Temperature
+
+    # Example source sensors:
+    - platform: resistance
+      id: resistance_sensor
+      sensor: source_sensor
+      configuration: DOWNSTREAM
+      resistor: 10kOhm
+      name: Resistance Sensor
+
+    - platform: adc
+      id: source_sensor
+      pin: A0
+      update_interval: never
+
+switch:
     - platform: gpio
       pin: D0
-      id: dallas
+      id: ntc_vcc
 
-button:
-    - platform: template
-      name: Test 1-wire bus
-      on_press:
-          then:
-              - lambda: |-
-                    id(dallas).search();
-                    id(dallas).dump_config();
-
-# one_wire:
-#     - platform: gpio
-#       pin: 1
-#       id: bus1
-
-# sensor:
-#     - platform: dallas_temp
-#       name: temperature
-#       update_interval: 15s
-#       one_wire_id: bus1
+interval:
+    - interval: 60s
+      then:
+          - switch.turn_on: ntc_vcc
+          - component.update: source_sensor
+          - switch.turn_off: ntc_vcc
