@@ -1,0 +1,71 @@
+esphome:
+    name: thermometer-3
+    friendly_name: Thermometer 3
+
+esp8266:
+    board: d1_mini
+
+logger:
+
+api:
+    encryption:
+        key: "WgmnlJKfrm+0tlEpPZ/nIQkfx5YeSSl+lHUr5gKCo1w="
+ota:
+    - platform: esphome
+      password: "dc31585f18c49d2dc1982ad591f1e88d"
+
+wifi:
+    ssid: !secret wifi_ssid
+    password: !secret wifi_password
+
+    # Enable fallback hotspot (captive portal) in case wifi connection fails
+    ap:
+        ssid: "Thermometer3 Fallback Hotspot"
+        password: "h2EEHfIr1zkh"
+
+captive_portal:
+
+switch:
+    - platform: restart
+      name: "D1 mini BM280 Restart"
+
+# SDA=GPIO4=D2 SCL=GPIO5=D1 sur D1mini
+i2c:
+    sda: 4
+    scl: 5
+    scan: true
+    id: bus_a
+
+sensor:
+    # - platform: bmp280_i2c
+    #   temperature:
+    #       name: "Outside Temperature"
+    #       oversampling: 16x
+    #   pressure:
+    #       name: "Outside Pressure"
+    #   address: 0x76
+    #   update_interval: 10s
+
+    - platform: aht10
+      variant: AHT20
+      update_interval: 5s
+      temperature:
+          name: "AHT20 temp"
+          id: aht20_temp
+          accuracy_decimals: 1
+          filters:
+              - filter_out: 0.0
+              - median:
+                    window_size: 3
+                    send_every: 3
+                    send_first_at: 1
+      humidity:
+          name: "AHT20 humidity"
+          id: aht20_humidity
+          accuracy_decimals: 1
+          filters:
+              - filter_out: 0.0
+              - median:
+                    window_size: 3
+                    send_every: 3
+                    send_first_at: 1
