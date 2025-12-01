@@ -1,0 +1,56 @@
+esphome:
+    name: sensors-4
+    friendly_name: sensors-4
+
+esp8266:
+    board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+    encryption:
+        key: "HABvio0LnWv725y3s/eAK99/n3oH8U2tx9EzGStACLY="
+
+ota:
+    - platform: esphome
+      password: "c2698eb5c7e7b00c3212c11929e92880"
+
+wifi:
+    ssid: !secret wifi_ssid
+    password: !secret wifi_password
+
+    # Enable fallback hotspot (captive portal) in case wifi connection fails
+    ap:
+        ssid: "Sensors-4 Fallback Hotspot"
+        password: "aUMK16eK4lB1"
+
+captive_portal:
+
+one_wire:
+    - platform: gpio
+      pin: D1
+      id: bus1
+
+sensor:
+    - platform: dallas_temp
+      update_interval: 5s
+      name: temperature
+      id: temperature
+      icon: "mdi:snowflake-thermometer"
+      one_wire_id: bus1
+      unit_of_measurement: "°C"
+
+    - platform: adc
+      update_interval: 5s
+      name: tds
+      accuracy_decimals: 3
+      # samples: 30
+      # sampling_mode: avg
+      pin: A0
+      unit_of_measurement: ppm
+      filters:
+          - multiply: 3.3
+          - lambda: return x/(1+(0.2 * (id(temperature).state-25.0)));
+          - lambda: return (133.42*x*x*x - 255.86*x*x + 857.39*x)*0.5;

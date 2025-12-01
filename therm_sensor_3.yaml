@@ -48,24 +48,24 @@ sensor:
 
     - platform: aht10
       variant: AHT20
-      update_interval: 5s
+      #   update_interval: 5s
       temperature:
           name: "AHT20 temp"
           id: aht20_temp
           accuracy_decimals: 1
-          filters:
-              - filter_out: 0.0
-              - median:
-                    window_size: 3
-                    send_every: 3
-                    send_first_at: 1
+          #   filters:
+          #       - filter_out: 0.0
+          #       - median:
+          #             window_size: 3
+          #             send_every: 3
+          #             send_first_at: 1
       humidity:
           name: "AHT20 humidity"
           id: aht20_humidity
           accuracy_decimals: 1
-          filters:
-              - filter_out: 0.0
-              - median:
-                    window_size: 3
-                    send_every: 3
-                    send_first_at: 1
+          #   filters:
+          #       - filter_out: 0.0
+          #       - median:
+          #             window_size: 3
+          #             send_every: 3
+          #             send_first_at: 1

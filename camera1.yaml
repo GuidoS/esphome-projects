@@ -1,0 +1,105 @@
+#   # Enable fallback hotspot (captive portal) in case wifi connection fails
+#   ap:
+#     ssid: "Camera1 Fallback Hotspot"
+#     password: "bFQLtpLrNhf0"
+
+# captive_portal:
+
+esphome:
+    name: camera1
+    friendly_name: camera1
+
+esp32:
+    board: esp32dev
+    framework:
+        type: arduino
+
+# Enable logging
+logger:
+    level: VERBOSE
+    tx_buffer_size: 256
+
+# Enable Home Assistant API
+api:
+    encryption:
+        key: "/LU/c3mWnDIUJbkW7IHxQPRYgknRZeNge7j/31wsevA="
+
+ota:
+    - platform: esphome
+      password: "b33a22d75c33a6e1b7e50b7d77974326"
+
+wifi:
+    ssid: !secret wifi_ssid
+    password: !secret wifi_password
+    # domain: .jamesachambers.net
+    # power_save_mode: none
+
+    # manual_ip:
+    #     static_ip: 192.168.4.76
+    #     gateway: 192.168.1.1
+    #     subnet: 255.255.0.0
+    #     dns1: 192.168.1.1
+    #     dns2: 8.8.8.8
+
+esp32_camera:
+    id: espcam
+    name: esp-cam
+    external_clock:
+        pin: GPIO0
+        frequency: 10MHz
+    i2c_pins:
+        sda: GPIO26
+        scl: GPIO27
+    data_pins: [GPIO5, GPIO18, GPIO19, GPIO21, GPIO36, GPIO39, GPIO34, GPIO35]
+    vsync_pin: GPIO25
+    href_pin: GPIO23
+    pixel_clock_pin: GPIO22
+    power_down_pin: GPIO32
+    resolution: 800x600
+    jpeg_quality: 10 # max. 63
+    max_framerate: 1.0fps
+    idle_framerate: 0.2fps
+    vertical_flip: true
+    horizontal_mirror: false
+    brightness: 2 # -2 to 2
+    contrast: 1 # -2 to 2
+    special_effect: none
+    # exposure settings
+    aec_mode: auto
+    aec2: false
+    ae_level: 0
+    aec_value: 300
+    # gain settings
+    agc_mode: auto
+    agc_gain_ceiling: 2x
+    agc_value: 0
+    # white balance setting
+    wb_mode: auto
+output:
+    # white LED
+    - platform: ledc
+      channel: 2
+      pin: GPIO4
+      id: espCamLED
+    # red status light
+    - platform: gpio
+      pin:
+          number: GPIO33
+          inverted: True
+      id: gpio_33
+light:
+    - platform: monochromatic
+      output: espCamLED
+      name: esp-cam light
+    - platform: binary
+      output: gpio_33
+      name: esp-cam led
+switch:
+    - platform: restart
+      name: esp-cam restart
+binary_sensor:
+    - platform: status
+      name: esp-cam status
+sensor:
+    - platform: wifi_signal
+      name: esp-cam WiFi Signal
