@@ -35,22 +35,26 @@ one_wire:
 
 sensor:
     - platform: dallas_temp
-      update_interval: 5s
+      #   update_interval: 5s
       name: temperature
       id: temperature
       icon: "mdi:snowflake-thermometer"
       one_wire_id: bus1
-      unit_of_measurement: "°C"
+      filters:
+          - lambda: return x * (9.0/5.0) + 32.0;
+      unit_of_measurement: "°F"
 
     - platform: adc
-      update_interval: 5s
+      #   update_interval: 5s
       name: tds
       accuracy_decimals: 3
-      # samples: 30
-      # sampling_mode: avg
+      samples: 30
+      sampling_mode: avg
       pin: A0
-      unit_of_measurement: ppm
+      unit_of_measurement: mS/cm
       filters:
-          - multiply: 3.3
-          - lambda: return x/(1+(0.2 * (id(temperature).state-25.0)));
-          - lambda: return (133.42*x*x*x - 255.86*x*x + 857.39*x)*0.5;
+          - multiply: 3.3 # 3.3v from 0-1
+          - lambda: return x/(1.0+(0.02 * (id(temperature).state-25.0))); # temp adjustment
+          - multiply: 1.8 # k value calibration
+          - lambda: return ((133.42 * x * x * x) - (255.86 * x * x) + (857.39 * x)) * 0.5; # v to tds conversion
+          - lambda: return x/500; # convert from ppm to EC
